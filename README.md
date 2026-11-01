@@ -5,7 +5,7 @@
 <p>A WhatsApp support agent for Indian small businesses that answers only from your knowledge base, looks up orders, books slots, and hands the chat to a person when it should.</p>
 
 <p>
-  <a href="https://whatsapp-support-agent.vercel.app"><img alt="Live demo" src="https://img.shields.io/badge/live%20demo-online-27272a?style=flat&labelColor=18181b"></a>
+  <a href="https://whatsapp-support-agent-ashen.vercel.app"><img alt="Live demo" src="https://img.shields.io/badge/live%20demo-online-27272a?style=flat&labelColor=18181b"></a>
   <a href="n8n/whatsapp-support-agent.n8n.json"><img alt="n8n workflow included" src="https://img.shields.io/badge/n8n%20workflow-included-52525b?style=flat&labelColor=18181b"></a>
   <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-27272a?style=flat&labelColor=18181b"></a>
   <img alt="Vercel" src="https://img.shields.io/badge/deploy-Vercel-52525b?style=flat&labelColor=18181b">
@@ -13,7 +13,7 @@
 </p>
 
 <p>
-  <a href="https://whatsapp-support-agent.vercel.app"><b>Live demo</b></a> ·
+  <a href="https://whatsapp-support-agent-ashen.vercel.app"><b>Live demo</b></a> ·
   <a href="#n8n-workflow"><b>n8n workflow</b></a> ·
   <a href="#how-it-works"><b>Architecture</b></a> ·
   <a href="#run-locally"><b>Run locally</b></a>
