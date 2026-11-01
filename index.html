@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WhatsApp Support Agent · grounded answers and human handoff for Indian SMBs</title>
+  <meta name="description" content="A WhatsApp support agent for Indian small businesses. It answers only from the business knowledge base, looks up orders, books slots, replies in English or Hinglish, and hands off to a person on complaints, large refunds and low confidence." />
+  <meta property="og:title" content="WhatsApp Support Agent" />
+  <meta property="og:description" content="Chat with a D2C store, a dental clinic or a coaching centre and watch the agent's intent, tool calls and guardrail decisions for every reply." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://whatsapp-support-agent.vercel.app" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#F7F7F5" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111111'/%3E%3Cpath d='M9 10h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-8l-4 3v-3H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-in">
+      <a class="brand" href="./" aria-label="WhatsApp Support Agent home">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 10h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-8l-4 3v-3H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+        <span>WhatsApp Support Agent</span>
+      </a>
+      <span class="crumb" aria-hidden="true">/</span>
+      <span class="crumb-cur">Playground</span>
+      <div class="nav-right">
+        <span id="modeBadge" class="badge" role="status" title="Checking server mode">Checking…</span>
+        <a class="nav-link" href="https://github.com/Saitarun29/whatsapp-support-agent/blob/main/n8n/whatsapp-support-agent.n8n.json" target="_blank" rel="noopener">n8n workflow</a>
+        <a class="nav-link" href="https://github.com/Saitarun29/whatsapp-support-agent" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <div class="page-head">
+      <div>
+        <h1>WhatsApp support agent</h1>
+        <p class="lede">Message a business the way a customer would. The agent answers only from its knowledge base, looks up orders, books slots, and hands the chat to a person when money, anger or doubt is involved.</p>
+      </div>
+      <dl class="facts" aria-label="Agent thresholds">
+        <div><dt>Confidence floor</dt><dd class="num" id="factFloor">0.55</dd></div>
+        <div><dt>Auto-refund limit</dt><dd class="num" id="factLimit">₹1,500</dd></div>
+        <div><dt>Replies in</dt><dd>English · Hinglish</dd></div>
+      </dl>
+    </div>
+
+    <div class="biz-bar">
+      <p class="label" id="bizLabel">Business</p>
+      <div id="bizTabs" class="seg" role="radiogroup" aria-labelledby="bizLabel">
+        <span class="seg-skel">Loading businesses…</span>
+      </div>
+    </div>
+
+    <div id="errorBox" class="alert" role="alert" hidden></div>
+
+    <div class="layout">
+      <!-- Scenarios -->
+      <section class="panel scen-panel" aria-labelledby="scenTitle">
+        <div class="panel-head">
+          <h2 id="scenTitle">Try a scenario</h2>
+          <span class="meta">One click sends it</span>
+        </div>
+        <ul id="scenarios" class="scenarios"></ul>
+      </section>
+
+      <!-- Phone -->
+      <section class="panel phone-panel" aria-labelledby="chatTitle">
+        <div class="panel-head">
+          <h2 id="chatTitle">Customer chat</h2>
+          <button id="clearChat" class="btn btn-sm" type="button">Clear chat</button>
+        </div>
+        <div class="phone">
+          <div class="phone-top">
+            <span id="bizAvatar" class="avatar" aria-hidden="true">GC</span>
+            <div class="phone-who">
+              <b id="bizName">Business</b>
+              <span id="bizStatus">Business account</span>
+            </div>
+          </div>
+          <div id="chatLog" class="chat" role="log" aria-live="polite" aria-label="Chat messages" tabindex="0"></div>
+          <div id="chips" class="chips" role="group" aria-label="Quick replies"></div>
+          <form id="composer" class="composer" autocomplete="off">
+            <label class="sr-only" for="msg">Message</label>
+            <input id="msg" name="msg" type="text" maxlength="600" placeholder="Type a message" aria-describedby="custNote" />
+            <button id="sendBtn" class="send" type="submit" aria-label="Send message">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10l14-6-5 14-2.5-5.5L3 10z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+            </button>
+          </form>
+        </div>
+        <p id="custNote" class="cust-note">You are chatting as <b id="custName">a customer</b> from <span id="custPhone" class="mono">+91</span>. Order lookups use this number, as WhatsApp provides it.</p>
+      </section>
+
+      <!-- Trace -->
+      <section class="panel trace-panel" aria-labelledby="traceTitle">
+        <div class="panel-head">
+          <h2 id="traceTitle">Agent trace</h2>
+          <span id="traceMeta" class="meta">Idle</span>
+        </div>
+        <div id="trace" aria-live="polite">
+          <p class="empty">Send a message or pick a scenario. Intent, confidence, tool calls and guardrail decisions for each reply appear here.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Data -->
+    <section class="panel data-panel" aria-labelledby="dataTitle">
+      <div class="panel-head">
+        <h2 id="dataTitle">What the agent can see</h2>
+        <div class="tabs" role="tablist" aria-label="Business data">
+          <button class="tab" role="tab" id="tab-kb" aria-controls="pane-kb" aria-selected="true">Knowledge base</button>
+          <button class="tab" role="tab" id="tab-rec" aria-controls="pane-rec" aria-selected="false" tabindex="-1">Records</button>
+          <button class="tab" role="tab" id="tab-ses" aria-controls="pane-ses" aria-selected="false" tabindex="-1">Session</button>
+        </div>
+      </div>
+      <div id="pane-kb" role="tabpanel" aria-labelledby="tab-kb" class="pane"></div>
+      <div id="pane-rec" role="tabpanel" aria-labelledby="tab-rec" class="pane" hidden></div>
+      <div id="pane-ses" role="tabpanel" aria-labelledby="tab-ses" class="pane" hidden></div>
+    </section>
+
+    <section class="principles" aria-label="Design principles">
+      <div><h3>Answers only from your KB</h3><p>If no entry covers the question, the agent says so and offers a person. Medical questions are never answered.</p></div>
+      <div><h3>People handle money and anger</h3><p>Complaints, refunds over the limit, low confidence and requests for a person become a handoff ticket in Slack.</p></div>
+      <div><h3>Same logic as the n8n import</h3><p>The workflow verifies the Meta webhook, classifies, routes, looks up orders over HTTP and replies through the Graph API.</p></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-in">
+      <p>Built by Sai Tarun Ronanki</p>
+      <nav class="foot-links" aria-label="Author links">
+        <a href="https://github.com/Saitarun29/whatsapp-support-agent" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-primary btn-sm" href="https://wa.me/918008941430?text=Hello%20Sai%20Tarun%20Ronanki,%20I%20want%20to%20discuss%20about%20my%20workflow" target="_blank" rel="noopener">Discuss your workflow</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="assets/app.js"></script>
+</body>
+</html>
